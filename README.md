@@ -1,2 +1,0 @@
-# techdegree-project-10
- 

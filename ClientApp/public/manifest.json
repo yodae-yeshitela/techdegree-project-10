@@ -1,0 +1,6 @@
+{
+  "short_name": "FSJS Project 10",
+  "name": "Course Directory",
+  "start_url": ".",
+  "display": "standalone"
+}
