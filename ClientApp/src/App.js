@@ -4,7 +4,6 @@ import './Global.css'
 import {Provider} from './util/Context'
 import Service from './util/Service'
 import cookie from 'js-cookie'
-import { Redirect } from 'react-router-dom';
 
 class App extends React.Component {
 

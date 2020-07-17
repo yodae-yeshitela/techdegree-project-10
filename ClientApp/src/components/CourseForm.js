@@ -77,6 +77,16 @@ export default class NewCourse extends React.Component{
         const {formData, isOwner, errors} = this.state;
         const {updateMode} = this.props;
         const {redirect, redirectTo, redirectToError} = this.state;
+
+        let fromPath = '';
+        if(updateMode && authenticatedUser){
+            fromPath = `/course/${this.props.match.params.id}`;
+        }
+        else if( !authenticatedUser && updateMode){
+            fromPath = `/update-course/${this.props.match.params.id}`
+        }
+        else
+            fromPath = '/add-course'
         if(redirect){
             return <Redirect to={{pathname: redirectTo, state: {update: true}}}/>
         }
@@ -168,7 +178,7 @@ export default class NewCourse extends React.Component{
             </>)
         if(this.state.isLoading)
             return null;
-        return <Redirect to={{pathname: '/forbidden', state: {from: `course/${this.props.match.params.id}`, updateMode: updateMode, notAuthenticated: authenticatedUser?false:true, notOwner: !isOwner}}}/> 
+        return <Redirect to={{pathname: '/forbidden', state: {from: fromPath, updateMode: updateMode, notAuthenticated: authenticatedUser?false:true, notOwner: !isOwner}}}/> 
         
     }
 }

@@ -15,7 +15,7 @@ export default function Forbidden(props) {
         <div style={{margin: '0 auto', width: '50%'}}>
                 <h4 style={{fontSize: '28px'}}>Sorry but you must be signed in, inorder to {action} a course</h4>
                 <p style={{display: 'inline-block', margin: '12px 0px'}}>
-                     <Link to='/signin'>Click here</Link> to sign in, if you already have an account
+                     <Link to={{pathname:'/signin', state: {from: from}}}>Click here</Link> to sign in, if you already have an account
                 </p>
                 <p>Don't have an account? <Link to='/signup'>Click here</Link> to sign up!</p>
         

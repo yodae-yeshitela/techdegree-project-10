@@ -2,8 +2,10 @@ import React from 'react'
 import CourseTile from './CourseTile'
 import {Link, Redirect} from 'react-router-dom'
 export default function Home({ context, ...props }) {
-    if(context.redirectToError)
+    if(context.redirectToError){
+        context.actions.refresh();
         return <Redirect to='/error' />
+    }
 
     if(props.location && props.location.state && props.location.state.update){
         props.location.state = null;

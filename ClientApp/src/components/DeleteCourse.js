@@ -23,7 +23,7 @@ export default function DeleteCourse(props) {
                         return {...currState}
                     })
                 }
-                else
+                else{
                     setStatus ( currState => {
                         currState.success = true;
                         currState.isLoading = false;
@@ -35,6 +35,7 @@ export default function DeleteCourse(props) {
                                 currState.redirect = true;
                                 return {...currState}
                             }), 3000)
+                }
             })
             .catch( () => {
                 setStatus( status => {
@@ -51,7 +52,7 @@ export default function DeleteCourse(props) {
     }
 
     if(!authenticatedUser){
-        return <Redirect to={{pathname: '/forbidden', state: {from: `course/${id}`, deleteMode: true, notAuthenticated: true}}}/>
+        return <Redirect to={{pathname: '/forbidden', state: {from: `/delete-course/${id}`, deleteMode: true, notAuthenticated: true}}}/>
     }
 
     if(status.isLoading){
@@ -60,7 +61,7 @@ export default function DeleteCourse(props) {
 
     if(!status.success){
        if(status.errorCode === 403)
-        return <Redirect to={{pathname: '/forbidden', state : { from: `course/${id}`, deleteMode: true}}}/>
+        return <Redirect to={{pathname: '/forbidden', state : { from: `/course/${id}`, deleteMode: true}}}/>
     }
 
     if(status.redirect){
@@ -68,9 +69,15 @@ export default function DeleteCourse(props) {
     }
 
     if(status.success){
-        return <h1>Course deleted successfully</h1>
+        return (
+            <div className="bounds">
+                <h1>Course deleted successfully</h1>
+            </div>
+            
+            
+        )
     }
-    return <Redirect to={{pathname: '/forbidden', state : { from: `course/${id}`, deleteMode: true}}}/>
+    return <Redirect to={{pathname: '/forbidden', state : { from: `/delete-course/${id}`, deleteMode: true}}}/>
 
     
 }

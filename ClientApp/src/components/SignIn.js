@@ -3,7 +3,7 @@ import { Link, Redirect } from 'react-router-dom'
 
 export default function SignIn(props) {
 
-  const {context, history} = props;
+  const {context, history, location} = props;
   const formData = {}
   const [status, setStatus] = useState({
     showMessage: false,
@@ -43,7 +43,7 @@ export default function SignIn(props) {
             redirectToError : false
           });
           
-          setTimeout( () => history.push('/'), 3000)
+          setTimeout( () => history.push((location && location.state && location.state.from) || '/'), 3000)
         }
       })
       .catch( () => {
