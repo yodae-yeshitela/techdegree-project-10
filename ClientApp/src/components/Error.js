@@ -1,6 +1,7 @@
 import React from 'react'
 
 export default function Error() {
+    //error page
     return(
         <div className="bounds">
         <h1>Error</h1>

@@ -45,10 +45,10 @@ router.post('/',authenticateUser, validateNewCourse , asyncHandler(async(req,res
     const errors = validationResult(req);
     if(!errors.isEmpty()){
         const err = errors.array().map( e => e.msg);
-        return res.status(400).json(err);
+        return res.status(400).json({errors: err});
     }
     let course = await Course.create({userId : req.currentUserId,...req.body});
-    res.status(201).header('Location', `api/courses/${course.id}`).end();
+    res.status(201).header('Location', `api/courses/${course.id}`).json({id: course.id}).end();
     })
 );
 
@@ -56,9 +56,8 @@ router.post('/',authenticateUser, validateNewCourse , asyncHandler(async(req,res
 router.put('/:id', authenticateUser, validateUpdateCourse, async(req,res,next) => {
     const errors = validationResult(req)
     if(!errors.isEmpty()){
-        const err = createError(400);
-        err.details = errors.array().map( e => e.msg);
-        return next(err);
+        const err = errors.array().map( e => e.msg);
+        return res.status(400).json(err);
     };
 
     const course = await Course.findByPk(req.params.id);

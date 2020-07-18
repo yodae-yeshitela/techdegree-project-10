@@ -1,43 +1,50 @@
 import React from 'react';
 import Layout from './components/Layout';
-import './Global.css'
 import {Provider} from './util/Context'
 import Service from './util/Service'
 import cookie from 'js-cookie'
+import Feedback from './components/Feedback';
 
 class App extends React.Component {
 
   state = {
-    courses: null,
     authenticatedUser: cookie.getJSON('authenticatedUser')
   };
-  componentDidMount(){
-    this.getProjects();
-  }
+
   render() {
     const value = {
-      redirectToError: this.state.redirect,
       authenticatedUser: this.state.authenticatedUser,
-      courses: this.state.courses,
       actions: {
         signIn: this.signIn,
         signOut: this.signOut,
-        refresh: this.refreshCourses
+        showFeedback: this.showFeedback
       }
     }
-    return (
+    return (<>
+      <Feedback {...this.state.Feedback}/>
       <Provider value={value}>
           <Layout />
       </Provider>
-      );
+      </>);
+  }
+
+  showFeedback = (message, type, duration = 4000) => {
+    this.setState({
+      Feedback : {
+        message, type, show: true
+      }
+    })
+    setTimeout( () => {
+      this.setState ({ Feedback: null})
+    }, duration );
   }
   signIn = async(emailAddress, password) => {
     const user = await Service.getUser(emailAddress, password);
     if(user != null){
       this.setState( () => { 
-        return {authenticatedUser: {emailAddress, password, name: `${user.firstName} ${user.lastName}`}}
+        return {authenticatedUser: {fullName: `${user.firstName} ${user.lastName}`, password, ...user}}
       })
-      cookie.set('authenticatedUser', {emailAddress, password, name: `${user.firstName} ${user.lastName}`});
+      cookie.set('authenticatedUser', {fullName: `${user.firstName} ${user.lastName}`, password, ...user});
     }
     return user;
   }   

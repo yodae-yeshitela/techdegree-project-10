@@ -1,101 +1,107 @@
 import React from 'react'
 import Service from '../util/Service';
-import { Link, Redirect } from 'react-router-dom';
+import { Link } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 
-export default class CourseDetails extends React.Component {
-
+export default class CourseDetail extends React.Component {
 
   state = {
-    courseData : null
+    courseData: null,
+    redirectToError: false,
+    isOwner: false
   }
-
-  componentDidMount(){
-    const {id} = this.props.match.params;
+  componentDidMount() {
+    const { id } = this.props.match.params; 
+    const { authenticatedUser } = this.props.context;
+    //use Service module to find course
     Service.getCourseById(id)
-      .then( data => {
-        if(data != null)
-          this.setState( {courseData: data, id: id, redirectToError: false});
+      .then(courseData => {
+        if (courseData != null) {
+          //if course is found set application state
+          const { user } = courseData;
+          //check if the currently authenticated user is the owner of the course
+          const isOwner = authenticatedUser ? authenticatedUser.emailAddress === user.emailAddress : false; 
+          this.setState({ courseData, isOwner, id: courseData.courseId });
+        }
         else
           this.props.history.push('/notfound');
       })
-      .catch (() => {
-        this.setState({redirectToError: true});
-      })
+      .catch( ()=> this.props.history.push('/error'))//redirect to error page if request fails
   }
+  //function to delete a course
+  handleDelete = () => {
+    const {authenticatedUser, actions} = this.props.context;
+    const {courseData} = this.state;
+    const { id } = this.state;
+    //doublecheck if the user is actually authenticated
+    if (authenticatedUser){
+      //confirmation to delete
+      if(window.confirm('Are you sure you want to delete this course?'))
+        //use Service module to delete course
+        Service.deleteCourse(id, {username: authenticatedUser.emailAddress, password: authenticatedUser.password})
+            .then( (response) => {
+                //if there is a response course deletion failed, so show error for failure
+                if(response){
+                  actions.showFeedback(`Course can not be deleted: ${response.error}`, 'error')
+                }
+                //if course was successfully deleted show message and redirect to home
+                else{
+                  actions.showFeedback(`Course "${courseData.title}" deleted successfully!`, 'success');
+                  this.props.history.push('/')
+                }
+            })
+            .catch( () => this.props.history.push('/error'))//redirect to error if request fails
+          }
+  }
+  render() {
+    const { id } = this.props.match.params;
+    const { courseData, isOwner } = this.state;
+    const { authenticatedUser } = this.props.context;
 
-
-render(){
-    const {courseData, id, redirectToError} = this.state;
-    if(redirectToError){
-      return <Redirect to='/error' />
-    }
-    if(courseData){
-      const {user, materialsNeeded, estimatedTime, description} = courseData;
-      return(<>
+    if (courseData) {
+      const { user, materialsNeeded, estimatedTime, description } = courseData;
+      return (<>
+        {authenticatedUser && isOwner ?
           <div className="actions--bar">
-          <div className="bounds">
-            <div className="grid-100">
-              <Link className="button" to={`/update-course/${id}`} >Update Course</Link>
-              <Link className="button" to={"/delete-course/" + id}>Delete Course</Link>
-              <Link className="button button-secondary" to="/">Return to List</Link>
+            <div className="bounds">
+              <div className="grid-100">
+                <Link className="button" to={`/courses/${id}/update`} >Update Course</Link>
+                <button className="button" onClick= {this.handleDelete}>Delete Course</button>
+                <Link className="button button-secondary" to="/">Return to List</Link>
+              </div>
+            </div>
+          </div>
+          : null}
+        <div className="bounds course--detail">
+          <div className="grid-66">
+            <div className="course--header">
+              <h4 className="course--label">Course</h4>
+              <h3 className="course--title">{courseData.title}</h3>
+              <p>By {`${user.firstName} ${user.lastName}`}</p>
+            </div>
+            <div className="course--description">
+              <ReactMarkdown source={description}/>{/*Use of react markdown to format text*/}
+            </div>
+          </div>
+          <div className="grid-25 grid-right">
+            <div className="course--stats">
+              <ul className="course--stats--list">
+                <li className="course--stats--list--item">
+                  <h4>Estimated Time</h4>
+                  <h3>{estimatedTime ? estimatedTime : 'Not specified'}</h3>
+                </li>
+                <li className="course--stats--list--item">
+                  <h4>Materials Needed</h4>
+                    {/*Use of react markdown to format text*/}
+                    {materialsNeeded?<ReactMarkdown source={materialsNeeded}/>:"No materials specified"} 
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-          <div className="bounds course--detail">
-            <div className="grid-66">
-              <div className="course--header">
-                <h4 className="course--label">Course</h4>
-                <h3 className="course--title">{courseData.title}</h3>
-                  <p>By {`${user.firstName} ${user.lastName}`}</p>
-              </div>
-              <CourseDescription courseDescription={description}/>
-            </div>
-            <div className="grid-25 grid-right">
-              <div className="course--stats">
-                <ul className="course--stats--list">
-                  <EstimatedTime estimatedTime={estimatedTime}/>
-                  <MaterialsNeeded materialsNeeded={materialsNeeded}/>
-                </ul>
-              </div>
-            </div>
-          </div>
-          </>
+      </>
       )
     }
-    return <></>
+    return null;
   }
-}
-
-const EstimatedTime = ({estimatedTime}) => {
-  return(
-    <li className="course--stats--list--item">
-      <h4>Estimated Time</h4>
-      <h3>{estimatedTime? estimatedTime: 'Not specified'}</h3>
-    </li>
-  )
-}
-const MaterialsNeeded = ({materialsNeeded}) => {  
-    return(
-      <li className="course--stats--list--item">
-        <h4>Materials Needed</h4>
-          <ul>
-            { materialsNeeded? 
-                materialsNeeded.trim().split('\n').map( (item,index) => <li key={index}>{item.replace("*", '').trim()}</li>)
-              : <li> No materials specified</li>
-            } 
-          </ul>
-      </li>
-    )
-}
-
-const CourseDescription = ({courseDescription}) => {
-  if(courseDescription)
-    return(
-      <div className="course--description">
-        {
-          courseDescription.split('\n\n').map( (p,i) => <p key={i}> {p} </p>)
-        } 
-      </div>
-    )
-  return <></>
 }

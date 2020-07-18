@@ -1,40 +1,43 @@
 import React from 'react'
 import Header from './Header'
-import SignUp from './SignUp'
-import SignIn from './SignIn'
+import SignUp from './UserSignUp'
+import SignIn from './UserSignIn'
 import withContext from '../util/Context'
 import {Route, Switch, BrowserRouter} from 'react-router-dom'
-import Home from './Home'
-import SignOut from './SignOut';
+import Courses from './Courses'
+import SignOut from './UserSignOut';
 import CourseDetail from './CourseDetail'
-import CourseForm from './CourseForm'
 import Forbidden from './Forbidden'
-import DeleteCourse from './DeleteCourse'
 import NotFound from './NotFound'
 import Error from './Error'
+import PrivateRoute from '../util/PrivateRoute'
+import CreateCourse from './CreateCourse'
+import UpdateCourse from './UpdateCourse'
 
+
+//Get the components and give them access to context
 const HeaderWithContext = withContext(Header);
 const SignInWithContext = withContext(SignIn);
 const SignUpWithContext = withContext(SignUp);
-const HomeWithContext = withContext(Home);
+const CoursesWithContext = withContext(Courses);
 const SignOutWithContext = withContext(SignOut);
-const CourseFormWithContext = withContext(CourseForm);
+const UpdateCourseWithContext = withContext(UpdateCourse);
 const CourseDetailWithContext = withContext(CourseDetail)
-const DeleteCourseWithContext = withContext(DeleteCourse);
+const CreateCourseWithContext = withContext(CreateCourse);
+
 export default function Layout () {
     return(
         <BrowserRouter>
-            <HeaderWithContext/>
+            <HeaderWithContext />
             <Switch>
-                <Route exact path='/' render={(props) => <HomeWithContext {...props} />}/>
+                <Route exact path='/' render={(props) => <CoursesWithContext {...props} />}/>
+                <PrivateRoute path='/courses/create' component={CreateCourseWithContext} />
+                <PrivateRoute path='/courses/:id/update' component={UpdateCourseWithContext}/>
+                <Route path='/courses/:id' render={(props) => <CourseDetailWithContext {...props}/>}/>
                 <Route path='/signin' render={(props) => <SignInWithContext {...props}/>}/>
                 <Route path='/signup' render={(props) => <SignUpWithContext {...props}/>}/>
                 <Route path='/signout' render={(props) => <SignOutWithContext {...props}/>}/>  
-                <Route path='/course/:id' render={(props) => <CourseDetailWithContext {...props}/>}/>
-                <Route path='/add-course' render={(props) => <CourseFormWithContext {...props}/>}/>
-                <Route path='/update-course/:id' render={(props) => <CourseFormWithContext updateMode {...props}/>}/>
                 <Route path='/forbidden' render={(props) => <Forbidden {...props}/>}/>
-                <Route path='/delete-course/:id' render={(props) => <DeleteCourseWithContext {...props}/>}/>
                 <Route path='/error' component={Error}/>
                 <Route component={NotFound}/>
             </Switch>

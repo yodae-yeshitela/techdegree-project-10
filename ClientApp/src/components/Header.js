@@ -1,11 +1,13 @@
 import React from 'react'
-import { Link } from 'react-router-dom'
-export default function Header({ context }) {
+import { Link, useLocation } from 'react-router-dom'
+export default function Header({context}) {
+  //Header component to show on top of page
+  const location = useLocation(); //get access to location for redirection to sign in page
   return (
     <div className="header">
       <div className="bounds">
         <Link to='/'><h1 className="header--logo">Courses</h1></Link>
-        <Link to='/add-course'>
+        <Link to='/courses/create'>
           <h5 className="header--logo" style={{fontSize: "1em"}}> 
             <svg 
               style={{width: '13px',height: 'auto',margin: '0 5px 0 0',fill: '#999'}}
@@ -24,12 +26,12 @@ export default function Header({ context }) {
           {
             context.authenticatedUser ? 
               <React.Fragment>
-                <span>Welcome, {context.authenticatedUser? context.authenticatedUser.name:''}!</span>
+                <span>Welcome, {context.authenticatedUser? context.authenticatedUser.fullName:''}!</span>
                   <Link className="signout" to='/signout' >Sign Out</Link>
               </React.Fragment>
               : 
               <React.Fragment>
-                <Link className="signin" to="/signin">Sign in</Link>
+                <Link className="signin" to={{pathname:'/signin', state: {from : location.pathname}}}>Sign in</Link>
                 <Link className="signup" to="/signup">Sign up</Link>
               </React.Fragment>
           }

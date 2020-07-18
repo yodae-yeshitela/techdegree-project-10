@@ -779,14 +779,15 @@ input:focus {
 }
 
 .success-alert{
+  position: fixed;
+  top: 0;
   height: 60px;
   padding: 20px;
   text-align: center;
-  width: 50%;
-  margin: 0 auto;
-  border-radius: 10px;
+  width: 100%;
   padding: 20px 0;
   box-sizing: border-box;
+  z-index: 1;
 }
 
 .message{

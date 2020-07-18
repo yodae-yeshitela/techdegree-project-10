@@ -65,12 +65,10 @@ async function createUser(data) {
 async function createCourse(data, credentials) {
      const result = await api('/courses', 'post', data, true, credentials);
      if(result.status === 201){
-          console.log(result);
-          return {location: result.headers};
-          
+          return await result.json();
      }
      else if( result.status === 400){
-          return {errors: await result.json()};
+          return await result.json();
      }
      else throw new Error();
 }
@@ -78,9 +76,7 @@ async function createCourse(data, credentials) {
 async function updateCourse(id,data, credentials) {
      const result = await api(`/courses/${id}`, 'put', data, true, credentials);
      if(result.status === 204){
-          console.log(result);
-          return {location: result.headers};
-          
+          return null;
      }
      else if( result.status === 400){
           return {errors: await result.json()};
@@ -93,7 +89,7 @@ async function deleteCourse(id, credentials) {
           return null;
      }
      else if( result.status === 403 || result.status === 400){
-          return {status: result.status, ...await result.json()};
+          return await result.json();
      }
      else throw new Error();
 }
