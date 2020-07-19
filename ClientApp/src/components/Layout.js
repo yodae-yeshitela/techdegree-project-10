@@ -9,7 +9,7 @@ import SignOut from './UserSignOut';
 import CourseDetail from './CourseDetail'
 import Forbidden from './Forbidden'
 import NotFound from './NotFound'
-import Error from './Error'
+import UnhandledError from './UnhandledError'
 import PrivateRoute from '../util/PrivateRoute'
 import CreateCourse from './CreateCourse'
 import UpdateCourse from './UpdateCourse'
@@ -38,7 +38,7 @@ export default function Layout () {
                 <Route path='/signup' render={(props) => <SignUpWithContext {...props}/>}/>
                 <Route path='/signout' render={(props) => <SignOutWithContext {...props}/>}/>  
                 <Route path='/forbidden' render={(props) => <Forbidden {...props}/>}/>
-                <Route path='/error' component={Error}/>
+                <Route path='/error' component={UnhandledError}/>
                 <Route component={NotFound}/>
             </Switch>
         </BrowserRouter>

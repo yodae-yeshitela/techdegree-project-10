@@ -27,9 +27,7 @@ export default class UpdateCourse extends React.Component {
                     setTimeout(() => this.props.history.push(`courses/${id}`), 1000);
                 }
             })
-            .catch(() => {
-                this.setState({ redirectToError: true })
-            })//redirect to error page when request fails
+            .catch( ()=> this.props.history.push('/error'))//redirect to error page on api request failure        
     }
     //handle user inputs
     handleChange = (e) => {
