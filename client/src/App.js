@@ -6,7 +6,8 @@ import cookie from 'js-cookie'
 import Feedback from './components/Feedback';
 
 class App extends React.Component {
-
+  //initialize the state with the authenticated user if found in the brower 
+  //cookies
   state = {
     authenticatedUser: cookie.getJSON('authenticatedUser')
   };
@@ -27,7 +28,7 @@ class App extends React.Component {
       </Provider>
       </>);
   }
-
+  //helper action to show feedbacks to users based on interactions
   showFeedback = (message, type, duration = 4000) => {
     this.setState({
       Feedback : {
@@ -38,6 +39,7 @@ class App extends React.Component {
       this.setState ({ Feedback: null})
     }, duration );
   }
+  // a function that uses our service module to sign in a user
   signIn = async(emailAddress, password) => {
     const user = await Service.getUser(emailAddress, password);
     if(user != null){
@@ -48,27 +50,11 @@ class App extends React.Component {
     }
     return user;
   }   
-
+  //a function to sign out the current user
   signOut = () => {
       cookie.remove('authenticatedUser');
       cookie.remove('isAuthenticated')
       this.setState({authenticatedUser: null})
-  }
-
-  getProjects = () => {
-    Service.getCourses()
-      .then( response => this.setState( currState => { 
-        currState.courses = response;
-        currState.redirect = false;
-        return {...currState}
-      }))
-      .catch( () => {
-        this.setState({redirect: true})
-      });
-  }
-
-  refreshCourses = () => {
-    this.getProjects()
   }
 }
 
