@@ -61,17 +61,19 @@ export default class CourseDetail extends React.Component {
     if (courseData) {
       const { user, materialsNeeded, estimatedTime, description } = courseData;
       return (<>
-        {authenticatedUser && isOwner ?
+        
           <div className="actions--bar">
             <div className="bounds">
               <div className="grid-100">
+                {authenticatedUser && isOwner ? <>
                 <Link className="button" to={`/courses/${id}/update`} >Update Course</Link>
                 <button className="button" onClick= {this.handleDelete}>Delete Course</button>
+                </>: null}
                 <Link className="button button-secondary" to="/">Return to List</Link>
               </div>
             </div>
           </div>
-          : null}
+         
         <div className="bounds course--detail">
           <div className="grid-66">
             <div className="course--header">
